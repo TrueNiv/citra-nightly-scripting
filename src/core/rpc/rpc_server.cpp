@@ -38,10 +38,10 @@ void RPCServer::HandleReadMemory(Packet& packet, u32 address, u32 data_size) {
 }
 
 void RPCServer::HandleWriteMemory(Packet& packet, u32 address, const u8* data, u32 data_size) {
-    // Only allow writing to certain memory regions
-    if ((address >= Memory::PROCESS_IMAGE_VADDR && address <= Memory::PROCESS_IMAGE_VADDR_END) ||
-        (address >= Memory::HEAP_VADDR && address <= Memory::HEAP_VADDR_END) ||
-        (address >= Memory::N3DS_EXTRA_RAM_VADDR && address <= Memory::N3DS_EXTRA_RAM_VADDR_END)) {
+    // Remove the part that limits memory access to certain regions
+    //if ((address >= Memory::PROCESS_IMAGE_VADDR && address <= Memory::PROCESS_IMAGE_VADDR_END) ||
+    //    (address >= Memory::HEAP_VADDR && address <= Memory::HEAP_VADDR_END) ||
+    //    (address >= Memory::N3DS_EXTRA_RAM_VADDR && address <= Memory::N3DS_EXTRA_RAM_VADDR_END)) {
         // Note: Memory write occurs asynchronously from the state of the emulator
         Core::System::GetInstance().Memory().WriteBlock(
             *Core::System::GetInstance().Kernel().GetCurrentProcess(), address, data, data_size);
@@ -49,7 +49,7 @@ void RPCServer::HandleWriteMemory(Packet& packet, u32 address, const u8* data, u
 
         // Is current core correct here?
         Core::System::GetInstance().InvalidateCacheRange(address, data_size);
-    }
+    //}
     packet.SetPacketDataSize(0);
     packet.SendReply();
 }
